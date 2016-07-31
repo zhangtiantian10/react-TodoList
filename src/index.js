@@ -8,20 +8,26 @@ class ModifyTodo extends Component{
     constructor(props) {
         super(props);
         this.state = {
-            complete: this.props.checked
+            complete: !this.props.checked.static,
+            todoLists: this.props.children
         }
     }
     handleChange(e) {
         this.setState({
             complete: !this.state.complete
         });
+        this.setState({
+            todoLists : main.modifyTodolist(this.props.children, this.state.complete, this.props.index)
+        });
+
+        this.props.callbackParent(this.state.todoLists);
     }
-    handleTodo() {
+    handleTodo(e) {
+
         if (this.state.complete) {
-            return <s>{this.props.children}</s>;
-        }
-        else {
-            return this.props.children;
+            return <s>{this.props.checked.value}</s>;
+        } else {
+            return this.props.checked.value;
         }
     }
     render() {
@@ -49,30 +55,23 @@ class InsertTodo extends Component{
             complete: false
         }
     }
-    increment(s, i) {
-        if (s && i === -1) {
+    increment() {
             this.setState({
                 todoLists: main.getTosoLists(this.state.todoLists, document.getElementById('text1').value)
             });
-        } else {
-            this.setState({
-                todoLists: main.modifyTodolist(this.state.todoLists, s, i)
-            });
-        }
-
     }
     handlerKeyUp(e) {
         if (e.keyCode == 13) {
             let value = e.target.value;
             if (!value) return false;
 
-            this.increment(true, -1);
+            this.increment();
             document.getElementById('text1').value = '';
         }
     }
-    handleChange(newComplete) {
+    modifyTodo(newTodeLists) {
         this.setState({
-            complete: newComplete
+            todoLists: newTodeLists
         });
     }
     render() {
@@ -83,10 +82,11 @@ class InsertTodo extends Component{
                        onKeyDown={this.handlerKeyUp.bind(this)}/>
 
                 <ul className="list-group">
-                    {this.state.todoLists.map((count, index) => {
-                        return <ModifyTodo index={index} checked={!count.static} callbackParent={this.handleChange}>
-                            {count.value}
-                        </ModifyTodo>
+                    {this.state.todoLists.map((list, index) => {
+                        return(
+                            <ModifyTodo index={index} checked={list} callbackParent={this.modifyTodo.bind(this)}>
+                            {this.state.todoLists}
+                        </ModifyTodo>)
                     })}
                     <li className="list-group-item">
                         <small>{main.getTodoThings(this.state.todoLists)} items left</small>
