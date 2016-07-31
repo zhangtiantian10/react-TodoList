@@ -1,4 +1,4 @@
-function getCount(counts, count) {
+function getTodoLists(counts, count) {
 
     counts.push({value: count, static: true});
 
@@ -11,19 +11,19 @@ function deleteNumber(array, index) {
     return array;
 }
 
-function getTrueNumber(counts) {
+function getTodoThings(counts) {
     const count = counts.filter(count => count.static === true).length;
     return count;
 }
 
-function modifyCount(counts, s,index) {
+function modifyTodoList(counts, s, index) {
     counts[index].static = s;
 
     return counts;
 }
 
 module.exports = {
-    getCount: getCount,
-    getTrueNumber: getTrueNumber,
-    modifyCount: modifyCount
+    getTosoLists: getTodoLists,
+    getTodoThings: getTodoThings,
+    modifyTodolist: modifyTodoList
 }
