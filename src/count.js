@@ -5,7 +5,7 @@ function getTodoLists(counts, count) {
     return counts;
 }
 
-function deleteNumber(array, index) {
+function deleteCompleteThing(array, index) {
     array.splice(index, 1);
 
     return array;
@@ -25,5 +25,6 @@ function modifyTodoList(counts, s, index) {
 module.exports = {
     getTosoLists: getTodoLists,
     getTodoThings: getTodoThings,
-    modifyTodolist: modifyTodoList
+    modifyTodolist: modifyTodoList,
+    deleteCompleteThing: deleteCompleteThing
 }
