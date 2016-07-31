@@ -8,7 +8,7 @@ class ModifyTodo extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            complete: !this.props.checked.static,
+            complete: false,
             todoLists: this.props.children,
         }
     }
@@ -49,7 +49,7 @@ class ModifyTodo extends Component {
                 <input type="checkbox" checked={this.state.complete}
                        onClick={this.handleChange.bind(this)} value=""/>
                 {this.handleTodo()}
-                <button type="button" className="btn btn-link btn-sm" onClick={this.handleDelete.bind(this)}>
+                <button type="button" className="btn btn-link pull-right" onClick={this.handleDelete.bind(this)}>
                                                 <span className="glyphicon glyphicon-remove-sign"
                                                       aria-hidden="true"></span>
                 </button>
@@ -65,7 +65,6 @@ class ModifyTodo extends Component {
         );
     }
 }
-;
 
 class InsertTodo extends Component {
     constructor(props) {
@@ -107,18 +106,19 @@ class InsertTodo extends Component {
             this.setState({
                 todoLists: main.deleteAllComplete(this.state.todoLists)
             });
-            flag = 0;
+        } else{
+            this.setState({
+                flag: flag
+            });
         }
-        this.setState({
-            flag: flag
-        });
     }
 
     render() {
         return (
-            <div className="col-xs-4">
+            <div className="col-md-6 col-md-offset-3">
+                <h1 className="text-center">todos</h1>
 
-                <input type="text" className="form-control" placeholder="What do you want to do?" id="text1"
+                <input type="text" className="form-control input-lg" placeholder="What needs to be done?" id="text1"
                        onKeyDown={this.handlerKeyUp.bind(this)}/>
 
                 <ul className="list-group">
@@ -167,7 +167,7 @@ class Footer extends Component {
                         </button>
                     </div>
 
-                    <button type="button" className="btn btn-link" onClick={this.clearComplete.bind(this)}>Clear</button>
+                    <button type="button" className="btn btn-link pull-right" onClick={this.clearComplete.bind(this)}>Clear</button>
                 </footer>
             );
         } else {
