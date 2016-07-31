@@ -9,7 +9,7 @@ class ModifyTodo extends Component {
         super(props);
         this.state = {
             complete: !this.props.checked.static,
-            todoLists: this.props.children
+            todoLists: this.props.children,
         }
     }
 
@@ -19,7 +19,7 @@ class ModifyTodo extends Component {
         });
 
         this.setState({
-            todoLists: main.modifyTodolist(this.props.children, this.state.complete, this.props.index)
+            todoLists: main.modifyTodolist(this.props.children ,this.props.checked)
         });
 
         this.props.callbackParent(this.state.todoLists);
@@ -36,26 +36,33 @@ class ModifyTodo extends Component {
 
     handleDelete(e) {
         this.setState({
-            todoLists: main.deleteCompleteThing(this.props.children, this.props.index)
+            todoLists: main.deleteCompleteThing(this.props.children, this.props.checked),
+            complete: !this.state.complete
         });
 
         this.props.callbackParent(this.state.todoLists);
     }
 
+    jude(e) {
+        if (this.props.flag === 0 || (this.props.flag === 1 && this.props.checked.static) || (this.props.flag === 2 && !this.props.checked.static)) {
+            return (<li className="list-group-item">
+                <input type="checkbox" checked={this.state.complete}
+                       onClick={this.handleChange.bind(this)} value=""/>
+                {this.handleTodo()}
+                <button type="button" className="btn btn-link btn-sm" onClick={this.handleDelete.bind(this)}>
+                                                <span className="glyphicon glyphicon-remove-sign"
+                                                      aria-hidden="true"></span>
+                </button>
+            </li>)
+        }
+    }
+
     render() {
         return (
             <div>
-                <li className="list-group-item">
-                    <input type="checkbox" checked={this.state.complete}
-                           onClick={this.handleChange.bind(this)} value=""/>
-                    {this.handleTodo()}
-                    <button type="button" className="btn btn-link btn-sm" onClick={this.handleDelete.bind(this)}>
-                                                <span className="glyphicon glyphicon-remove-sign"
-                                                      aria-hidden="true"></span>
-                    </button>
-                </li>
+                {this.jude()}
             </div>
-        )
+        );
     }
 }
 ;
@@ -66,13 +73,15 @@ class InsertTodo extends Component {
         this.state = {
             todoLists: [],
             complete: false,
-            newTodoLists: []
+            flag: 0,
+            index: 0
         }
     }
 
     increment() {
         this.setState({
-            todoLists: main.getTosoLists(this.state.todoLists, document.getElementById('text1').value)
+            todoLists: main.getTosoLists(this.state.todoLists, document.getElementById('text1').value, this.state.index),
+            index: this.state.index + 1
         });
     }
 
@@ -92,9 +101,16 @@ class InsertTodo extends Component {
         });
     }
 
-    modifyNewTodo(newTodoLists) {
+    modifyNewTodo(flag) {
+
+        if(flag === -1) {
+            this.setState({
+                todoLists: main.deleteAllComplete(this.state.todoLists)
+            });
+            flag = 0;
+        }
         this.setState({
-            newTodoLists: newTodoLists
+            flag: flag
         });
     }
 
@@ -106,12 +122,13 @@ class InsertTodo extends Component {
                        onKeyDown={this.handlerKeyUp.bind(this)}/>
 
                 <ul className="list-group">
-                    {this.state.newTodoLists.map((list, index) => {
+                    {this.state.todoLists.map((list) => {
                         return (
                             <div>
-                            <ModifyTodo index={index} checked={list} callbackParent={this.modifyTodo.bind(this)}>
-                                {this.state.todoLists}
-                            </ModifyTodo>{list.static}</div>)
+                                <ModifyTodo index={list.index} checked={list} callbackParent={this.modifyTodo.bind(this)}
+                                            flag={this.state.flag}>
+                                    {this.state.todoLists}
+                                </ModifyTodo>{list.static}</div>)
                     })}
                     <Footer callbackParent={this.modifyNewTodo.bind(this)}>{this.state.todoLists}</Footer>
                 </ul>
@@ -122,17 +139,19 @@ class InsertTodo extends Component {
 
 class Footer extends Component {
     showAll(e) {
-        this.props.callbackParent(this.props.children);
+        this.props.callbackParent(0);
     }
 
     showComplete(e) {
-        const completes = main.filterCompletes(this.props.children);
-        this.props.callbackParent(completes);
+        this.props.callbackParent(2);
     }
 
     showTodo(e) {
-        const todos = main.filterTodos(this.props.children);
-        this.props.callbackParent(todos);
+        this.props.callbackParent(1);
+    }
+
+    clearComplete(e) {
+        this.props.callbackParent(-1);
     }
 
     isShow() {
@@ -148,11 +167,10 @@ class Footer extends Component {
                         </button>
                     </div>
 
-                    <button type="button" className="btn btn-link">Clear</button>
+                    <button type="button" className="btn btn-link" onClick={this.clearComplete.bind(this)}>Clear</button>
                 </footer>
             );
         } else {
-            this.props.callbackParent(this.props.children);
 
             return <h1></h1>;
         }
