@@ -2,6 +2,7 @@
 node_modules
 npm-debug.log
 dist
+.idea/
 # Created by https://www.gitignore.io/api/linux,node,webstorm
 
 ### Linux ###
@@ -111,3 +112,4 @@ fabric.properties
 # modules.xml
 # .idea/misc.xml 
 # *.ipr
+.idea/
