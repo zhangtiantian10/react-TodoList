@@ -17,6 +17,7 @@ class ModifyTodo extends Component {
         this.setState({
             complete: !this.state.complete
         });
+
         this.setState({
             todoLists: main.modifyTodolist(this.props.children, this.state.complete, this.props.index)
         });
@@ -48,7 +49,7 @@ class ModifyTodo extends Component {
                     <input type="checkbox" checked={this.state.complete}
                            onClick={this.handleChange.bind(this)} value=""/>
                     {this.handleTodo()}
-                    <button type="button" className="btn btn-default btn-xs" onClick={this.handleDelete.bind(this)}>
+                    <button type="button" className="btn btn-link btn-sm" onClick={this.handleDelete.bind(this)}>
                                                 <span className="glyphicon glyphicon-remove-sign"
                                                       aria-hidden="true"></span>
                     </button>
@@ -64,7 +65,8 @@ class InsertTodo extends Component {
         super(props);
         this.state = {
             todoLists: [],
-            complete: false
+            complete: false,
+            newTodoLists: []
         }
     }
 
@@ -84,9 +86,15 @@ class InsertTodo extends Component {
         }
     }
 
-    modifyTodo(newTodeLists) {
+    modifyTodo(TodoLists) {
         this.setState({
-            todoLists: newTodeLists
+            todoLists: TodoLists
+        });
+    }
+
+    modifyNewTodo(newTodoLists) {
+        this.setState({
+            newTodoLists: newTodoLists
         });
     }
 
@@ -98,21 +106,64 @@ class InsertTodo extends Component {
                        onKeyDown={this.handlerKeyUp.bind(this)}/>
 
                 <ul className="list-group">
-                    {this.state.todoLists.map((list, index) => {
+                    {this.state.newTodoLists.map((list, index) => {
                         return (
+                            <div>
                             <ModifyTodo index={index} checked={list} callbackParent={this.modifyTodo.bind(this)}>
                                 {this.state.todoLists}
-                            </ModifyTodo>)
+                            </ModifyTodo>{list.static}</div>)
                     })}
-                    <li className="list-group-item">
-                        <small>{main.getTodoThings(this.state.todoLists)} items left</small>
-                    </li>
+                    <Footer callbackParent={this.modifyNewTodo.bind(this)}>{this.state.todoLists}</Footer>
                 </ul>
             </div>
         );
     }
 }
-;
+
+class Footer extends Component {
+    showAll(e) {
+        this.props.callbackParent(this.props.children);
+    }
+
+    showComplete(e) {
+        const completes = main.filterCompletes(this.props.children);
+        this.props.callbackParent(completes);
+    }
+
+    showTodo(e) {
+        const todos = main.filterTodos(this.props.children);
+        this.props.callbackParent(todos);
+    }
+
+    isShow() {
+        if (this.props.children.length != 0) {
+            return (
+                <footer className="list-group-item">
+                    <span>{main.getTodoThings(this.props.children)} items left</span>
+                    <div className="btn-group" role="group">
+                        <button type="button" className="btn btn-link" onClick={this.showAll.bind(this)}>All</button>
+                        <button type="button" className="btn btn-link" onClick={this.showTodo.bind(this)}>Active
+                        </button>
+                        <button type="button" className="btn btn-link" onClick={this.showComplete.bind(this)}>Complete
+                        </button>
+                    </div>
+
+                    <button type="button" className="btn btn-link">Clear</button>
+                </footer>
+            );
+        } else {
+            this.props.callbackParent(this.props.children);
+
+            return <h1></h1>;
+        }
+    }
+
+    render() {
+        return (
+            this.isShow()
+        )
+    }
+}
 
 render(<InsertTodo/>
     , document.getElementById('root'));

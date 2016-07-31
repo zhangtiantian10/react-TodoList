@@ -22,9 +22,19 @@ function modifyTodoList(counts, s, index) {
     return counts;
 }
 
+function filterCompletes(todoLists) {
+    return todoLists.filter(list => !list.static);
+}
+
+function filterTodos(todoLists) {
+    return todoLists.filter(list => list.static);
+}
+
 module.exports = {
     getTosoLists: getTodoLists,
     getTodoThings: getTodoThings,
     modifyTodolist: modifyTodoList,
-    deleteCompleteThing: deleteCompleteThing
+    deleteCompleteThing: deleteCompleteThing,
+    filterCompletes: filterCompletes,
+    filterTodos: filterTodos
 }
